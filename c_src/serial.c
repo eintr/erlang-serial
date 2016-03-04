@@ -264,7 +264,7 @@ void set_tbh_size(unsigned char buf[], int size)
 
 void tbh_write(int fd, unsigned char buf[], int buffsize)
 {
-  char header_buf[TBHSIZE];
+  unsigned char header_buf[TBHSIZE];
 
   Debug1("tbh_write: send message of size %d\r\n", buffsize);
 
@@ -607,7 +607,7 @@ int main(int argc, char *argv[])
 		    Debug("received OPEN ");
 		    /* Terminate string */
 		    buf[nr_read] = '\0';
-		    strcpy(ttyname,&buf[HEADERSIZE]);
+		    strcpy(ttyname, (void*)(buf+HEADERSIZE));
 
 		  open:
 		    Debug1("opening %s \r\n",ttyname);
@@ -642,7 +642,7 @@ int main(int argc, char *argv[])
 		    {
 		      int off;
  
-		      in_speed = get_speed(atoi(&buf[HEADERSIZE]));
+		      in_speed = get_speed(strtol((void*)(buf+HEADERSIZE), NULL, 10));
 
 		      /* Null-terminate string */
 		      buf[nr_read] = '\0';
@@ -652,7 +652,7 @@ int main(int argc, char *argv[])
 			  isdigit(buf[off]) && (off < MAXLENGTH) ;
 			  off += 1);
 
-		      out_speed = get_speed(atoi(&buf[off]));
+		      out_speed = get_speed(strtol((void*)(buf+off), NULL, 10));
 
 		      Debug1("     raw SPEED %s\r\n",&buf[HEADERSIZE]);
 		      Debug2("received SPEED %ud %ud\r\n",
