@@ -37,7 +37,7 @@ typedef enum {
 
 #define NULLFDS   ((fd_set *) 0)
 #define NULLTV    ((struct timeval *) 0)
-#define MAXLENGTH 1024
+#define MAXLENGTH 65536
 
 typedef struct {
   int rate;
