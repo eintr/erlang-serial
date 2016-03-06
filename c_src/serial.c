@@ -374,14 +374,11 @@ int Debug_Enabled = FALSE;
 int main(int argc, char *argv[])
 {
 	int            ttyfd = -1;           /* terminal file descriptor */
-	boolean        cbreak=FALSE;         /* cbreak flag              */
-	boolean        erlang=FALSE;         /* talking to erlang flag   */
 	speed_t        in_speed=B9600;       /* default in speed         */
 	speed_t        out_speed=B9600;      /* default out speed        */
 	char           ttyname[MAXPATHLEN];  /* terminal name            */
 
 	Debug_Enabled = TRUE;
-	erlang = TRUE;
 
 	/****************************************
 	 * Start processing loop
@@ -391,13 +388,9 @@ int main(int argc, char *argv[])
 		fd_set readfds;           /* file descriptor bit field for select */
 		int    maxfd;             /* max file descriptor for select */
 		unsigned char buf[MAXLENGTH];    /* buffer for transfer between serial-user */
-		int    escapes;           /* number of consecutive escapes in cbreak */
 
 		/* Set up initial bit field for select */
 		maxfd = Max(STDIN_FILENO, ttyfd);
-
-		/* no escapes encountered yet */
-		escapes = 0;
 
 		while (TRUE)
 		{
@@ -442,7 +435,6 @@ int main(int argc, char *argv[])
 			 */
 			if (FD_ISSET(STDIN_FILENO,&readfds)) {
 				int nr_read;
-				int i;
 				struct erl_msg_st msg;
 
 				/* Messages from Erlang are structured as:
@@ -501,7 +493,6 @@ int main(int argc, char *argv[])
 
 					case SPEED:	   /******************************/
 						{
-							int off;
 							int speed;
 							speed = get_speed(strtol((void*)(msg.data), NULL, 10));
 
